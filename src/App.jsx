@@ -1,42 +1,90 @@
-import { useState } from "react";
+import { useState } from 'react'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
+import Main from './pages/Main'
+import './App.css'
 
 export default function App() {
-  const [input, setInput] = useState("");
-  const [todos, setTodos] = useState([]);
+  const [page, setPage] = useState('login') // 'login' | 'signup' | 'main'
+  const [user, setUser] = useState(null) // { id: '...' }
+  const [greenPoints, setGreenPoints] = useState(1200)
 
-  const addTodo = () => {
-    if (input.trim() === "") return;
+  // Auth Forms State
+  const [authId, setAuthId] = useState('')
+  const [authPassword, setAuthPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [authError, setAuthError] = useState('')
 
-    setTodos([...todos, input]);
-    setInput("");
-  };
+  // Auth handlers
+  const handleLogin = (e) => {
+    e.preventDefault()
+    // Bypass validation: use entered ID or default to 'green_user'
+    const finalId = authId.trim() || 'green_user'
+    setUser({ id: finalId })
+    setPage('main')
+    setAuthId('')
+    setAuthPassword('')
+    setAuthError('')
+  }
 
-  const deleteTodo = (index) => {
-    setTodos(todos.filter((_, i) => i !== index));
-  };
+  const handleSignup = (e) => {
+    e.preventDefault()
+    // Bypass validation: use entered ID or default to 'green_user'
+    const finalId = authId.trim() || 'green_user'
+    setUser({ id: finalId })
+    setPage('main')
+    setAuthId('')
+    setAuthPassword('')
+    setConfirmPassword('')
+    setAuthError('')
+  }
+
+  const handleLogout = () => {
+    setUser(null)
+    setPage('login')
+  }
 
   return (
-    <div>
-      <h1>To Do List</h1>
+    <div className="App">
+      {page === 'login' && (
+        <Login
+          authId={authId}
+          setAuthId={setAuthId}
+          authPassword={authPassword}
+          setAuthPassword={setAuthPassword}
+          handleLogin={handleLogin}
+          setPage={setPage}
+          authError={authError}
+        />
+      )}
 
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="할 일을 입력하세요"
-      />
+      {page === 'signup' && (
+        <Signup
+          authId={authId}
+          setAuthId={setAuthId}
+          authPassword={authPassword}
+          setAuthPassword={setAuthPassword}
+          confirmPassword={confirmPassword}
+          setConfirmPassword={setConfirmPassword}
+          handleSignup={handleSignup}
+          setPage={setPage}
+          authError={authError}
+        />
+      )}
 
-      <button onClick={addTodo}>추가</button>
+      {page === 'main' && (
+        <Main
+          user={user}
+          greenPoints={greenPoints}
+          setGreenPoints={setGreenPoints}
+          handleLogout={handleLogout}
+        />
+      )}
 
-      <ul>
-        {todos.map((todo, index) => (
-          <li key={index}>
-            {todo}
-            <button onClick={() => deleteTodo(index)}>삭제</button>
-          </li>
-        ))}
-      </ul>
+      <footer>
+        <p>&copy; 2026 GreenMile. All rights reserved.</p>
+        <p style={{ fontSize: '12px', opacity: 0.8 }}>더 깨끗한 내일을 만들기 위해 AI와 함께 행동하는 우리들의 탄소저감 커뮤니티</p>
+      </footer>
     </div>
-  );
+  )
 }
- 
